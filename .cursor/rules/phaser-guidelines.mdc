@@ -1,0 +1,83 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Phaser Implementation Guidelines
+
+Magic Defense Arena uses Phaser 3.94 for game rendering and mechanics. Follow these guidelines for consistent implementation.
+
+## Scene Structure
+
+### Scene Class Template
+
+```typescript
+export default class ExampleScene extends Phaser.Scene {
+  // Properties
+  private gameObjects: GameObjectType[] = [];
+  
+  constructor() {
+    super('ExampleScene');
+  }
+  
+  init(data: any) {
+    // Initialize scene with data
+  }
+  
+  preload() {
+    // Load assets specific to this scene (if not in PreloadScene)
+  }
+  
+  create() {
+    // Create game objects, set up event listeners
+  }
+  
+  update(time: number, delta: number) {
+    // Update game objects
+    this.gameObjects.forEach(obj => obj.update(delta));
+  }
+}
+```
+
+## Asset Management
+
+- Use PreloadScene for loading most assets
+- Use proper asset keys with descriptive names
+- Group assets by type (sprites, audio, etc.)
+- Consider using texture atlases for better performance
+
+## Game Objects
+
+- Create dedicated classes for game objects
+- Use composition over inheritance
+- Implement update methods for objects that need to update each frame
+- Use object pooling for frequently created/destroyed objects
+
+## Physics
+
+- Use Arcade Physics for simple collision detection
+- Set up collision groups for different types of objects
+- Optimize physics body shapes for better performance
+- Disable physics for inactive objects
+
+## Input Handling
+
+- Use Phaser's input system for in-game interactions
+- Centralize input handling in appropriate scenes
+- Clean up input listeners when scenes are shut down
+- Consider using an input manager for complex games
+
+## Event System
+
+- Use Phaser's event system for game events
+- Establish a consistent naming convention for events
+- Clean up event listeners to prevent memory leaks
+- Use the EventEmitter for communication between scenes
+
+## Performance Optimization
+
+- Limit the number of active physics bodies
+- Use object pooling for frequently created/destroyed objects
+- Minimize the number of particles and other expensive effects
+- Use WebGL renderer when possible
+- Implement scene transitions correctly

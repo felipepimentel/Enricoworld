@@ -1,0 +1,87 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Game Systems Guidelines
+
+Magic Defense Arena contains multiple interconnected game systems. These guidelines ensure systems are modular, maintainable, and extensible.
+
+## System Structure
+
+### System Class Template
+
+```typescript
+export class ExampleSystem {
+  private scene: Phaser.Scene;
+  private eventEmitter: Phaser.Events.EventEmitter;
+  
+  constructor(scene: Phaser.Scene, eventEmitter: Phaser.Events.EventEmitter) {
+    this.scene = scene;
+    this.eventEmitter = eventEmitter;
+    this.initialize();
+  }
+  
+  private initialize() {
+    // Set up initial state and listeners
+  }
+  
+  update(delta: number) {
+    // Update system state
+  }
+  
+  // Public API methods
+  publicMethod() {
+    // Functionality exposed to other systems/objects
+  }
+}
+```
+
+## Core Systems
+
+### Path System
+
+- Manages enemy movement paths
+- Provides path generation and querying
+- Optimizes path calculations
+
+### Wave System
+
+- Controls enemy wave generation and spawning
+- Manages wave difficulty progression
+- Handles wave completion logic
+
+### Economy System
+
+- Manages in-game resources (coins)
+- Handles earning and spending mechanics
+- Calculates costs and rewards
+
+### Merge System
+
+- Handles character combining mechanics
+- Manages level up progression
+- Calculates merged character stats
+
+## System Communication
+
+- Use event system for loosely coupled communication
+- Use direct method calls for tightly coupled systems
+- Establish clear interfaces for system interactions
+- Document event types and payloads
+
+## System Design Principles
+
+1. **Single Responsibility**: Each system should focus on one aspect of gameplay
+2. **Encapsulation**: Systems should hide implementation details
+3. **Extensibility**: Design for future gameplay features
+4. **Performance**: Optimize critical systems for performance
+5. **Testability**: Make systems easy to test in isolation
+
+## Adding New Systems
+
+1. Create the system class in the `/game/systems` directory
+2. Follow the system template structure
+3. Initialize the system in the appropriate scene
+4. Register any required event listeners
+5. Expose a clean API for other systems to interact with

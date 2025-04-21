@@ -1,0 +1,40 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# WebGL Handling Guidelines
+
+## Detection and Fallback
+1. Always check WebGL support before game initialization
+2. Provide graceful fallback to Canvas renderer
+3. Handle SwiftShader detection and warnings
+
+## Implementation Details
+- Use [src/components/GameComponent.tsx](mdc:src/components/GameComponent.tsx) for initial WebGL check
+- Use [src/game/Game.ts](mdc:src/game/Game.ts) for renderer configuration
+
+## SwiftShader Handling
+1. Detect SwiftShader in Chrome
+2. Show appropriate warnings to users
+3. Provide instructions for hardware acceleration
+4. Allow game to continue with reduced performance
+
+## Error Messages
+- Clear messaging about WebGL support issues
+- Instructions for enabling hardware acceleration
+- Browser compatibility information
+- Links to troubleshooting resources
+
+## Performance Considerations
+1. Monitor frame rate in both WebGL and Canvas modes
+2. Adjust game features based on renderer
+3. Optimize rendering pipeline for both modes
+4. Use appropriate texture formats for each renderer
+
+## Testing Requirements
+- Test on multiple browsers
+- Test with hardware acceleration disabled
+- Test with SwiftShader
+- Verify fallback messaging
+- Check performance in both render modes

@@ -1,0 +1,80 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Enemy System
+
+Magic Defense Arena's enemy system controls the generation, movement, and behavior of enemies throughout the game. This document explains how enemies are implemented and how the wave system manages enemy spawning.
+
+## Enemy Types
+
+The game features four main enemy types, each with unique characteristics:
+
+```typescript
+export enum EnemyType {
+  MINION = 'minion',  // Basic enemy, balanced stats
+  BRUTE = 'brute',    // Slow but high health and damage
+  RUNNER = 'runner',  // Fast but low health
+  BOSS = 'boss',      // Very high health, damage, and rewards
+}
+```
+
+Each enemy type has specific stats defined in [src/game/objects/Enemy.ts](mdc:src/game/objects/Enemy.ts):
+
+| Type   | Health | Speed | Damage | Reward |
+|--------|--------|-------|--------|--------|
+| Minion | 100    | 50    | 5      | 10     |
+| Brute  | 300    | 30    | 15     | 25     |
+| Runner | 50     | 100   | 3      | 15     |
+| Boss   | 1000   | 20    | 50     | 100    |
+
+## Enemy Behavior
+
+Enemies follow these core behaviors:
+1. Move along a predefined path
+2. Display a health bar that changes color with health percentage
+3. Take damage from character attacks
+4. Play death animation when defeated
+5. Grant rewards when defeated
+
+## Wave System
+
+The [WaveSystem](mdc:src/game/systems/WaveSystem.ts) controls enemy spawning through:
+
+1. **Wave Generation**: Creates increasingly difficult waves
+2. **Enemy Spawning**: Spawns enemies with controlled timing
+3. **Wave Progression**: Manages transitions between waves
+
+### Wave Structure
+
+- Default: 10 waves per level
+- Waves increase in difficulty with level progression
+- Each wave contains a mix of enemy types with specific spawn delays
+- The final wave of each level contains a boss enemy
+
+### Implementation
+
+```typescript
+// Wave generation example from WaveSystem
+private generateWaves(level: number): WaveData[] {
+  // Creates progressively harder waves
+  // Mixes enemy types based on wave number
+  // Final wave includes a boss
+}
+```
+
+## System Integration
+
+The enemy system integrates with other game systems:
+- **Path System**: Provides paths for enemies to follow
+- **Economy System**: Processes rewards when enemies are defeated
+- **Character System**: Handles damage calculation and projectile collision
+
+## Extending Enemy System
+
+To add new enemy types or behaviors:
+1. Add new types to the EnemyType enum
+2. Define stats in the getEnemyStats method
+3. Create appropriate sprite assets
+4. Update the WaveSystem to incorporate new enemy types

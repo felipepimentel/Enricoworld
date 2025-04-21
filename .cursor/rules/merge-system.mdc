@@ -1,0 +1,96 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Merge System
+
+Magic Defense Arena's merge system enables players to combine identical characters to create more powerful versions, forming a core progression mechanic in the game.
+
+## Core Functionality
+
+The [MergeSystem](mdc:src/game/systems/MergeSystem.ts) manages the logic for:
+
+1. Determining which characters can be merged
+2. Calculating stats for merged characters
+3. Handling the merging process
+4. Managing associated visual feedback
+
+## Merge Requirements
+
+Characters can be merged when they meet these criteria:
+
+```typescript
+canMerge(char1: Character, char2: Character): boolean {
+  // Characters must be the same type and level
+  return char1.type === char2.type &&
+      char1.level === char2.level &&
+      char1.level < 3; // Max level is 3
+}
+```
+
+## Stat Calculation
+
+When characters merge, their stats improve following these rules:
+
+```typescript
+private calculateMergedStats(char1: Character, char2: Character): any {
+  // Base the merged stats on the first character but with a level boost
+  const levelMultiplier = 1.5; // 50% increase per level
+
+  return {
+    damage: char1.damage * levelMultiplier,
+    attackSpeed: char1.attackSpeed * 0.8, // Lower is better (faster)
+    range: char1.range * 1.2,
+    cost: char1.cost * 2 // Double the cost
+  };
+}
+```
+
+Key stat changes:
+- **Damage**: +50% per level
+- **Attack Speed**: 20% faster per level
+- **Range**: +20% per level
+- **Cost**: Doubles per level
+
+## Merge Process Flow
+
+1. Player drags a character onto another identical character
+2. System checks if merge is valid
+3. If valid, both original characters are removed
+4. A new higher-level character is created at the position of the first character
+5. The new character retains the type and ID of the first character
+6. A visual effect indicates successful merging
+7. The merged character has improved stats according to the calculation rules
+
+## Level Progression
+
+- Characters start at level 1
+- Merging creates level 2 characters
+- Merging level 2 characters creates level 3 characters
+- Level 3 is the maximum level (cannot be merged further)
+
+## System Integration
+
+The merge system interfaces with:
+- **Character System**: Accessing and modifying character properties
+- **UI Components**: Handling drag and drop interactions
+- **Economy System**: Calculating value of merged characters
+- **Game Scene**: Managing character placement on the field
+
+## Event Communication
+
+The system emits events to notify other systems of merges:
+
+```typescript
+// Emit event for the merge
+this.eventEmitter.emit('characters-merged', mergedChar);
+```
+
+## Extending the Merge System
+
+To modify the merge system:
+1. Adjust the level cap in the `canMerge()` method
+2. Modify stat multipliers in `calculateMergedStats()`
+3. Add special merge effects or conditions based on character types
+4. Implement combo bonuses for specific character type combinations

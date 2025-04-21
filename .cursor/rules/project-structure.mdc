@@ -1,0 +1,32 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Project Structure
+
+Magic Defense Arena follows a structured organization to maintain clean separation of concerns between React UI components and Phaser game logic.
+
+## Directory Organization
+
+- `/src` - Main source directory
+  - `/components` - React UI components (menus, UI overlays, etc.)
+  - `/game` - Phaser game implementation
+    - `/scenes` - Phaser scenes (Preload, Game, HUD, etc.)
+    - `/objects` - Game objects (Character, Enemy, etc.)
+    - `/systems` - Game systems (Path, Wave, Economy, Merge)
+  - `/assets` - Game assets
+    - `/sprites` - Character and object sprites
+    - `/audio` - Sound effects and music
+
+## Key Files
+
+- `App.tsx` - Main React application component
+- `game/Game.ts` - Main Phaser game initialization and configuration
+
+## Best Practices
+
+1. Keep React and Phaser code separate - React handles UI and menus, Phaser handles game rendering
+2. Use event emitters for communication between Phaser and React
+3. Store game state that needs to persist between scenes in a central location
+4. Keep asset loading in the PreloadScene

@@ -1,0 +1,79 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Asset Management
+
+Magic Defense Arena requires proper management of various game assets. Follow these guidelines for consistent asset handling.
+
+## Asset Organization
+
+```
+src/assets/
+├── sprites/
+│   ├── characters/     # Player characters by type
+│   ├── enemies/        # Enemy sprites by type
+│   ├── environment/    # Maps, tiles, backgrounds
+│   ├── ui/             # UI elements, buttons, icons
+│   └── effects/        # Visual effects, animations
+├── audio/
+│   ├── music/          # Background music tracks
+│   ├── sfx/            # Sound effects
+│   └── voice/          # Voice lines (if applicable)
+└── data/
+    ├── levels/         # Level definitions
+    ├── characters/     # Character stats and properties
+    └── waves/          # Wave definitions
+```
+
+## Naming Conventions
+
+- Use kebab-case for all filenames
+- Group assets by type, then by category
+- Include dimensions in image asset names when appropriate
+- Use consistent prefixes for asset types
+
+Examples:
+- `character-fire-level1.png`
+- `enemy-brute-walk.png`
+- `ui-button-green.png`
+- `sfx-explosion-small.mp3`
+
+## Asset Loading
+
+- Load assets in the PreloadScene
+- Use asset packs for organized loading
+- Implement loading progress bar
+- Consider dynamic loading for large assets
+
+## Optimization
+
+- Compress images appropriately (PNG for transparency, JPG for backgrounds)
+- Create sprite atlases for animations and related sprites
+- Optimize audio files (use MP3 or OGG with appropriate bitrates)
+- Resize images to match game requirements
+- Use texture compression when supported
+
+## Animation Management
+
+- Create consistent animation configurations
+- Define animations in a central location
+- Use animation keys with descriptive names
+- Share animations between similar entities when possible
+
+## Best Practices
+
+1. **Version Control**: Keep assets in version control with the code
+2. **Documentation**: Document each asset's purpose and usage
+3. **Fallbacks**: Provide fallbacks for missing or loading assets
+4. **References**: Track where each asset is used in the game
+5. **License Tracking**: Document the license/source of each asset
+
+## Asset Creation Guidelines
+
+- **Resolution**: Target 2x the display size for high-DPI screens
+- **Style**: Maintain consistent art style across all assets
+- **Contrast**: Ensure sufficient contrast for gameplay visibility
+- **Accessibility**: Consider color-blind friendly designs
+- **Performance**: Balance quality with performance requirements

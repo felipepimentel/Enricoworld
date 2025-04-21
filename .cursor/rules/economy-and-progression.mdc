@@ -1,0 +1,121 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Economy and Progression System
+
+Magic Defense Arena's economy and progression systems provide the resource management and advancement mechanics that drive the game's core loop. This document outlines how resources are earned, spent, and how progression is structured.
+
+## Economy System
+
+The [EconomySystem](mdc:src/game/systems/EconomySystem.ts) manages the game's currency (coins) and provides functions for:
+
+1. Tracking the player's coin balance
+2. Adding coins as rewards
+3. Spending coins on characters and upgrades
+4. Calculating costs and rewards
+
+### Core Currency Management
+
+```typescript
+addCoins(amount: number) {
+  this.coins += amount;
+  this.eventEmitter.emit('coins-changed', this.coins);
+}
+
+spendCoins(amount: number): boolean {
+  if (this.coins >= amount) {
+    this.coins -= amount;
+    this.eventEmitter.emit('coins-changed', this.coins);
+    return true;
+  }
+  return false;
+}
+```
+
+### Cost Calculations
+
+Character costs scale based on rarity and level:
+
+```typescript
+// Calculate cost for a character based on rarity and level
+calculateCharacterCost(rarity: string, level: number): number {
+  let baseCost = 0;
+
+  // Base cost by rarity
+  switch (rarity) {
+    case 'common':     baseCost = 50;  break;
+    case 'uncommon':   baseCost = 100; break;
+    case 'rare':       baseCost = 200; break;
+    case 'epic':       baseCost = 350; break;
+    case 'legendary':  baseCost = 500; break;
+    default:           baseCost = 50;
+  }
+
+  // Multiply by level (exponential growth)
+  return baseCost * Math.pow(2, level - 1);
+}
+```
+
+## Progression Model
+
+The game's progression follows these key mechanics:
+
+### Level-Based Progression
+
+1. Players complete levels with increasingly difficult waves
+2. Each level completed unlocks the next level
+3. Rewards increase with level difficulty
+4. Wave difficulty scales with level number
+
+### Character Progression
+
+Characters progress through:
+
+1. **Acquisition**: Purchasing new characters using coins
+2. **Leveling**: Merging identical characters to increase their level
+3. **Type Collection**: Acquiring different element types for strategic diversity
+
+### Economic Balance
+
+The economy is balanced around these principles:
+
+1. **Starting Resources**: Players begin with 100 coins
+2. **Enemy Rewards**: Defeating enemies grants coins based on type
+   - Minions: 10 coins
+   - Brutes: 25 coins
+   - Runners: 15 coins
+   - Bosses: 100 coins
+3. **Level Rewards**: Completing a level grants: `100 + level * 50` coins
+4. **Purchase Costs**: Character costs scale exponentially with level:
+   - Level 1: Base cost
+   - Level 2: 2× base cost
+   - Level 3: 4× base cost
+
+## System Integration
+
+The economy system interacts with:
+
+- **Wave System**: Enemy defeat rewards
+- **Character System**: Purchase and upgrade costs
+- **Merge System**: Merging costs and resource management
+- **UI Components**: Displaying coin balance and costs
+
+## Event Communication
+
+The economy system emits events to notify other systems of changes:
+
+```typescript
+// Emitted when coin balance changes
+this.eventEmitter.emit('coins-changed', this.coins);
+```
+
+## Extending the Economy System
+
+To modify the economy system:
+
+1. Adjust base character costs in `calculateCharacterCost()`
+2. Modify the level scaling factor to change progression pacing
+3. Add new resource types beyond coins if needed
+4. Implement additional cost or reward functions for new game mechanics

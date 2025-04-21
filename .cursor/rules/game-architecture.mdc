@@ -1,0 +1,58 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Game Architecture Guidelines
+
+## Core Structure
+- Main game logic is in [src/game/Game.ts](mdc:src/game/Game.ts)
+- Game component wrapper is in [src/components/GameComponent.tsx](mdc:src/components/GameComponent.tsx)
+- Entry point is [src/App.tsx](mdc:src/App.tsx)
+
+## Key Principles
+1. Keep React and Phaser Separate
+   - React handles component lifecycle and container setup
+   - Phaser manages all game state and logic
+   - No external state management libraries unless absolutely necessary
+
+2. Game Component Responsibilities
+   - Container setup and sizing
+   - WebGL support detection
+   - Game instance lifecycle (init/destroy)
+   - Error handling and fallback UI
+   - Window resize handling
+   - Visibility state management (pause/resume)
+
+3. Game Class Responsibilities
+   - Game configuration and setup
+   - Scene management
+   - Audio handling with fallbacks
+   - Performance monitoring (dev only)
+   - WebGL/Canvas renderer selection
+   - Resource cleanup
+
+## Error Handling
+- Always provide user-friendly fallback UI for errors
+- Handle WebGL support gracefully with Canvas fallback
+- Implement proper cleanup in error scenarios
+- Log meaningful error messages for debugging
+
+## Performance
+- Use proper cleanup in useEffect hooks
+- Implement proper game pause/resume on visibility change
+- Calculate optimal canvas dimensions based on container size
+- Round dimensions to even numbers to avoid scaling artifacts
+- Minimum game dimensions: 640x360
+
+## Audio Handling
+- Skip audio loading if not needed
+- Provide dummy sound handlers to prevent crashes
+- Handle audio context initialization errors gracefully
+
+## Development Guidelines
+1. Focus on core game functionality first
+2. Keep UI components minimal until core game works
+3. Test on different browsers and hardware
+4. Monitor performance in development
+5. Clean up resources properly

@@ -1,0 +1,60 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Development Modes
+
+Magic Defense Arena includes development modes to facilitate faster testing and debugging. This document outlines the available development features.
+
+## Quick Entry Mode
+
+For faster development, the game can be configured to skip the main menu and squad selection screens, starting directly at level 1 with a random squad. This is controlled by the `DEV_MODE` constant in App.tsx:
+
+```tsx
+// DEV_MODE controls whether to skip to gameplay
+const DEV_MODE = true;
+```
+
+When DEV_MODE is enabled:
+- The game starts directly in battle mode
+- A random squad is automatically generated
+- Characters are auto-placed on the battlefield
+- Quick reset buttons are available during gameplay and after game over/victory screens
+
+## Development Controls
+
+The following development controls are available during gameplay when DEV_MODE is enabled:
+
+- **Quick Reset Button**: Located in the top-right corner, restarts the game with a new random squad
+- **Auto-placement**: Characters are automatically placed near the path for quick testing
+- **Increased Starting Resources**: More coins are provided for testing purposes
+
+## Auto-Placement Logic
+
+The auto-placement system:
+1. Identifies valid positions adjacent to the enemy path
+2. Randomly selects positions for up to 4 characters
+3. Handles placement and reserve updating
+
+## Logging
+
+Development mode includes enhanced logging:
+- Squad size and composition
+- Level initialization
+- Auto-placement results
+- Game events (waves, defeats, etc.)
+
+## How to Use
+
+1. Set `DEV_MODE = true` in App.tsx
+2. Launch the game to immediately start the first level
+3. Use the Quick Reset button to try different random squads
+4. Set `DEV_MODE = false` to return to normal game flow
+
+## Testing Specific Configurations
+
+To test specific character configurations:
+1. Keep DEV_MODE enabled
+2. In App.tsx, modify the `mockCharacters` array to test specific character types
+3. Adjust the `generateRandomSquad` function parameters as needed

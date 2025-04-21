@@ -1,0 +1,41 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+# Audio Handling Guidelines
+
+## Core Principles
+1. Audio is optional, game must work without it
+2. Use dummy sound handlers when audio fails
+3. Never crash on audio errors
+4. Lazy load audio resources
+
+## Implementation
+- Use [src/game/scenes/PreloadScene.ts](mdc:src/game/scenes/PreloadScene.ts) for audio loading
+- Handle audio initialization in [src/game/Game.ts](mdc:src/game/Game.ts)
+
+## Error Handling
+1. Handle AudioContext initialization failures
+2. Provide fallbacks for decodeAudioData errors
+3. Log audio issues without breaking game flow
+4. Allow users to retry audio loading
+
+## Sound System Design
+1. Use dummy sound objects that match Phaser.Sound interface
+2. Implement safe play methods that check availability
+3. Cache sound references for reuse
+4. Clean up audio resources properly
+
+## Development Guidelines
+1. Test with audio disabled
+2. Test with different audio formats
+3. Test on mobile devices
+4. Monitor memory usage with audio
+5. Implement volume controls safely
+
+## User Experience
+- Clear messaging about audio status
+- Option to enable/disable audio
+- Graceful handling of autoplay restrictions
+- Proper cleanup when switching scenes

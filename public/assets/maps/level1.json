@@ -1,0 +1,27 @@
+{
+    "width": 20,
+    "height": 15,
+    "tilewidth": 32,
+    "tileheight": 32,
+    "infinite": false,
+    "orientation": "orthogonal",
+    "renderorder": "right-down",
+    "type": "map",
+    "tiledversion": "1.10.2",
+    "nextlayerid": 5,
+    "nextobjectid": 3,
+    "layers": [],
+    "tilesets": [
+        {
+            "name": "terrain",
+            "tilewidth": 32,
+            "tileheight": 32,
+            "tilecount": 2,
+            "columns": 2,
+            "image": "../sprites/terrain.png",
+            "imagewidth": 64,
+            "imageheight": 32
+        }
+    ],
+    "version": 1
+}
