@@ -1,0 +1,116 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Level Design
+
+The tower defense game features carefully designed levels that progressively introduce game mechanics and challenge players' strategic thinking, with Level 1 documented in [docs/campaign/level-1.md](mdc:docs/campaign/level-1.md).
+
+## Level 1: Constructor Defense
+
+### Map Layout
+
+Level 1 features an H-shaped layout:
+- Base located in the center-top
+- Builder starts in center-bottom
+- Enemies spawn from left and right sides
+- Initial towers pre-positioned at bottom entrance
+- Narrow corridors force strategic structure placement
+
+### Gameplay Phases
+
+The level progresses through distinct phases:
+
+1. **Tutorial Phase** (0-60 seconds):
+   - Player explores map and mechanics
+   - No enemy activity
+   - UI provides guidance on controls and objectives
+
+2. **First Wave** (60-120 seconds):
+   - 4 goblins attack from left entrance
+   - Teaches basic defense concepts
+   - Winnable with minimal strategy
+
+3. **Strategic Interval** (120-150 seconds):
+   - Resource collection period
+   - Planning for dual-front attack
+   - Random resource crystal appears
+
+4. **Second Wave** (150-240 seconds):
+   - Simultaneous attacks (5 goblins left, 3 right)
+   - Tests player's ability to manage multiple threats
+   - Requires prioritization decisions
+
+5. **Adaptation Phase** (240-270 seconds):
+   - Assessment and recovery period
+   - Repair damaged structures
+   - Strengthen defenses for final wave
+
+6. **Final Wave** (270-360 seconds):
+   - Complex 3-part attack (goblins, carriers, ogre)
+   - Ogre mini-boss targets weakest defenses
+   - Tests all learned mechanics
+
+### Critical Design Elements
+
+1. **Strategic Zones**:
+   - **Junction Points**: Where corridors meet (optimal tower placement)
+   - **Choke Points**: Narrow passages (good for walls)
+   - **Entry Points**: Where enemies spawn (require heavy defense)
+   - **Base Perimeter**: Final defense line around the central base
+
+2. **Visual Communication**:
+   - Color-coding indicates structure types
+   - Base highlighted in red to emphasize protection target
+   - Entry points marked with visual indicators
+   - Path visibility helps with strategic planning
+
+3. **Progression Curve**:
+   - Difficulty increases progressively
+   - Each wave introduces new challenges
+   - Resources scale with increasing threats
+   - Final wave combines all previously introduced elements
+
+## Level Design Principles
+
+The following principles guide all level designs:
+
+1. **Clear Objectives**:
+   - Protect the base
+   - Defeat all enemy waves
+   - Secondary objectives (e.g., efficiency, minimal damage)
+
+2. **Multiple Valid Strategies**:
+   - Wall-heavy defensive approach
+   - Tower-focused offensive approach
+   - Balanced hybrid strategies
+   - Different resource allocation options
+
+3. **Meaningful Decisions**:
+   - Resource prioritization (what to build first)
+   - Placement decisions (where to build)
+   - Movement priorities (where to position the builder)
+   - Repair vs. rebuild choices
+
+4. **Learning Through Play**:
+   - Mechanics introduced progressively
+   - Early failures are recoverable
+   - Tutorial elements integrated into gameplay
+   - Increasing challenge matches skill development
+
+## Map Implementation
+
+The map is implemented using:
+- Tiled map editor format (JSON)
+- Tileset with terrain and obstacle tiles
+- Collision layers for pathfinding and placement restrictions
+- Object layers for spawn points, paths, and other special elements
+
+## Enemy Path Generation
+
+Enemy paths are generated through:
+1. Predefined paths in the map data
+2. Dynamic pathfinding around player-placed obstacles
+3. Path prioritization based on shortest route to base
+4. Path recalculation when blocked by new structures

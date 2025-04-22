@@ -33,7 +33,7 @@ export class Trap extends Structure {
         this.rangeCircle.lineStyle(2, 0xff0000, 0.3);
         this.rangeCircle.strokeCircle(0, 0, this.range);
         this.rangeCircle.setVisible(false);
-        this.add(this.rangeCircle);
+        this.rangeCircle.setPosition(this.x, this.y);
 
         // Add hover interaction
         this.setInteractive();

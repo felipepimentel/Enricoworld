@@ -1,0 +1,102 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Builder Character
+
+The Builder is the player-controlled character that constructs and repairs defensive structures, implemented in [src/game/objects/Builder.ts](mdc:src/game/objects/Builder.ts).
+
+## Core Capabilities
+
+1. **Movement**:
+   - Controlled with arrow keys
+   - Movement speed: 200 units per second
+   - Can move freely around the map
+   - Collides with obstacles and structures
+
+2. **Resource Management**:
+   - Starts with 150 resources (as specified in [docs/campaign/level-1.md](mdc:docs/campaign/level-1.md))
+   - Collects resources from defeated enemies
+   - Collects resource crystals that appear randomly
+   - Spends resources to build structures
+
+3. **Structure Building**:
+   - Can select structure types (1: Wall, 2: Tower, 3: Trap)
+   - Preview shows where structure will be placed
+   - Building only possible within range of the builder (~100 units)
+   - Building animation plays when placing structures
+
+4. **Repairs**:
+   - Can repair damaged structures
+   - Repair costs resources (typically less than building new)
+   - Repair animation plays during process
+   - Structures must be fully repaired before upgrading
+
+## Builder UI Elements
+
+1. **Hammer Tool**:
+   - Visual indicator when in building/repair mode
+   - Appears above the builder character
+   - Animates during build/repair actions
+
+2. **Build Preview**:
+   - Shows selected structure type at cursor position
+   - Changes color based on valid/invalid placement
+   - Shows range indicators for towers
+
+3. **Resource Counter**:
+   - Displays current resource amount
+   - Updates in real-time as resources change
+   - Visually indicates when resources are insufficient
+
+## Builder Gameplay Loop
+
+During each wave sequence in the level:
+
+1. **Preparation Phase**:
+   - Build initial defenses using starting resources
+   - Plan strategic structure placement based on map layout
+
+2. **Active Wave Phase**:
+   - Rush to problem areas to build emergency defenses
+   - Repair damaged structures under attack
+   - Prioritize critical defensive positions
+
+3. **Post-Wave Phase**:
+   - Collect dropped resources from defeated enemies
+   - Strengthen weak points in defense
+   - Upgrade existing structures for future waves
+
+## Strategic Movement
+
+The builder's positioning is critical:
+1. Must travel between multiple attack fronts in later waves
+2. Repair priority determines movement paths
+3. Resource collection requires visiting drop locations
+4. Building placement requires proximity to the target location
+
+## Level 1 Builder Strategy
+
+As outlined in [docs/campaign/level-1.md](mdc:docs/campaign/level-1.md):
+
+1. **Initial Setup** (0-60 seconds):
+   - Analyze the H-shaped map layout
+   - Plan defensive structure placement
+   - Note pre-positioned towers at the south entrance
+
+2. **First Wave Response** (60-120 seconds):
+   - Quickly build 1-2 walls/towers in the left corridor
+   - Position to intercept the first goblin wave
+
+3. **Multi-Front Defense** (150-240 seconds):
+   - Split attention between both left and right corridors
+   - Make tactical decisions about which side to prioritize
+   - Use walls to temporarily block one path while defending another
+
+4. **Final Wave Tactics** (270-360 seconds):
+   - Focus on tracking and countering the ogre mini-boss
+   - Rapidly repair structures damaged by the ogre
+   - Maintain defensive coverage on both entry points
+
+The builder's movement efficiency and decision-making under pressure are key factors in successfully completing the level.

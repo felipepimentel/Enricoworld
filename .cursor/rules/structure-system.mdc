@@ -1,0 +1,103 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Structure System
+
+The structure system in the tower defense game allows players to build defensive structures to protect their base, implemented in [src/game/objects/Structure.ts](mdc:src/game/objects/Structure.ts).
+
+## Structure Types
+
+The game features three primary defensive structure types:
+
+1. **Walls** (`WALL`):
+   - Purpose: Block enemy movement, forcing path recalculation
+   - Health: 200 (higher than other structures)
+   - Cost: 30 resources
+   - Special: Can be repaired by the builder
+   - Upgrades: Increased health and damage resistance
+
+2. **Towers** (`TOWER`):
+   - Purpose: Attack enemies within range
+   - Health: 100
+   - Cost: 75 resources
+   - Attack Range: 150 units
+   - Attack Speed: 1 attack per second
+   - Damage: 30 per hit
+   - Upgrades: Increased range, damage, and attack speed
+
+3. **Traps** (`TRAP`):
+   - Purpose: Damage and slow enemies that step on them
+   - Health: 80
+   - Cost: 50 resources
+   - Damage: 20 per activation
+   - Slow Factor: Reduces enemy speed by 50%
+   - Cooldown: 3 seconds between activations
+   - Upgrades: Increased damage, stronger slow effect, reduced cooldown
+
+## Structure Placement
+
+Structures are placed by the player character (Builder):
+1. Player selects structure type (keys 1-3)
+2. A preview appears, following the mouse cursor
+3. Player clicks to place the structure
+4. Placement validity is checked (distance to builder, sufficient resources)
+5. Resources are deducted upon successful placement
+
+## Structure Lifecycle
+
+Each structure follows this lifecycle:
+1. **Building Phase**: Animation plays as structure is constructed
+2. **Active Phase**: Structure performs its function (blocking, attacking, etc.)
+3. **Damaged State**: Structure can take damage from enemies
+4. **Repair**: Player can repair damaged structures
+5. **Destruction**: Structure is removed if health reaches zero
+
+## Upgrade System
+
+Structures can be upgraded to increase effectiveness:
+1. Level 1: Base structure
+2. Level 2: Improved stats (~50% better)
+3. Level 3: Maximum level (~100% better than base)
+
+Upgrades require:
+- Sufficient resources
+- Builder to be in range of the structure
+- Structure to be fully repaired
+
+## Structure Behaviors
+
+### Wall Behavior
+- Blocks enemy movement
+- Forces enemies to recalculate paths
+- If no alternative path exists, enemies attack the wall
+- High health but no offensive capabilities
+
+### Tower Behavior
+- Automatically targets nearest enemy within range
+- Fires projectiles at regular intervals
+- Displays range indicator when selected/hovered
+- Rotates to face target enemy
+
+### Trap Behavior
+- Activates when enemy passes over it
+- Deals damage and applies slowing effect
+- Visual indicator shows when on cooldown
+- Can affect multiple enemies simultaneously
+
+## Structure Placement Strategy
+
+Following the level design in [docs/campaign/level-1.md](mdc:docs/campaign/level-1.md):
+1. **Critical Points**: Junctions in the H-shaped map are optimal for towers
+2. **Choke Points**: Narrow corridors can be blocked with walls to redirect enemies
+3. **High Traffic Areas**: Good locations for traps
+4. **Entry Protection**: Prioritize defenses near spawn points
+
+## Integration with Other Systems
+
+The structure system integrates with:
+1. **Builder System**: For placement, upgrades, and repairs
+2. **Economy System**: For resource costs and management
+3. **Enemy System**: For targeting, damage calculation, and path blocking
+4. **Wave System**: For strategic placement between waves

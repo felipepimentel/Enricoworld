@@ -316,7 +316,7 @@ export class Tower extends Structure {
         this.rangeCircle.lineStyle(2, 0x00ff00, 0.3);
         this.rangeCircle.strokeCircle(0, 0, this.range);
         this.rangeCircle.setVisible(false);
-        this.add(this.rangeCircle);
+        this.rangeCircle.setPosition(this.x, this.y);
 
         this.projectiles = scene.add.group({
             classType: Phaser.GameObjects.Sprite,
@@ -330,23 +330,33 @@ export class Tower extends Structure {
         this.on('pointerout', () => this.rangeCircle.setVisible(false));
     }
 
-    public update(time: number, enemies: Phaser.GameObjects.GameObject[]): void {
+    public update(time: number, enemies: Phaser.GameObjects.GameObject[] | any): void {
         if (this.state === StructureState.BUILDING) return;
 
         if (time - this.lastAttackTime >= this.attackSpeed) {
-            const target = this.findTarget(enemies);
-            if (target) {
-                this.attack(target);
-                this.lastAttackTime = time;
+            if (enemies && Array.isArray(enemies) && enemies.length > 0) {
+                const target = this.findTarget(enemies);
+                if (target) {
+                    this.attack(target);
+                    this.lastAttackTime = time;
+                }
             }
         }
     }
 
     private findTarget(enemies: Phaser.GameObjects.GameObject[]): Phaser.GameObjects.GameObject | null {
+        if (!enemies || !Array.isArray(enemies) || enemies.length === 0) {
+            return null;
+        }
+
         let closestEnemy = null;
         let closestDistance = this.range;
 
         for (const enemy of enemies) {
+            if (!enemy || typeof enemy.x !== 'number' || typeof enemy.y !== 'number') {
+                continue;
+            }
+
             const distance = Phaser.Math.Distance.Between(
                 this.x, this.y,
                 enemy.x, enemy.y

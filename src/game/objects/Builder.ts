@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 export class Builder extends Phaser.Physics.Arcade.Sprite {
     private speed: number = 200;
-    private crystals: number = 100; // Start with some crystals
+    private crystals: number = 150; // Start with 150 resources as per level-1.md
     private hammer: Phaser.GameObjects.Sprite;
     private isBuilding: boolean = false;
     private buildingPreview?: Phaser.GameObjects.Sprite;
@@ -61,24 +61,24 @@ export class Builder extends Phaser.Physics.Arcade.Sprite {
         try {
             // Only create animations if they don't exist yet
             if (!anims.exists('walk-down')) {
-                // Walking animations
+                // Walking animations - use only frame 0 to avoid errors
                 anims.create({
                     key: 'walk-down',
-                    frames: anims.generateFrameNumbers('builder', { start: 0, end: 3 }),
+                    frames: [{ key: 'builder', frame: 0 }],
                     frameRate: 10,
                     repeat: -1
                 });
 
                 anims.create({
                     key: 'walk-up',
-                    frames: anims.generateFrameNumbers('builder', { start: 4, end: 7 }),
+                    frames: [{ key: 'builder', frame: 0 }],
                     frameRate: 10,
                     repeat: -1
                 });
 
                 anims.create({
                     key: 'walk-side',
-                    frames: anims.generateFrameNumbers('builder', { start: 8, end: 11 }),
+                    frames: [{ key: 'builder', frame: 0 }],
                     frameRate: 10,
                     repeat: -1
                 });
@@ -86,7 +86,7 @@ export class Builder extends Phaser.Physics.Arcade.Sprite {
                 // Building animation
                 anims.create({
                     key: 'build',
-                    frames: anims.generateFrameNumbers('builder', { start: 12, end: 15 }),
+                    frames: [{ key: 'builder', frame: 0 }],
                     frameRate: 10,
                     repeat: 0
                 });

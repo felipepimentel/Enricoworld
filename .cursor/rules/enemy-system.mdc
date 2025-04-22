@@ -5,76 +5,86 @@ alwaysApply: true
 ---
 # Enemy System
 
-Magic Defense Arena's enemy system controls the generation, movement, and behavior of enemies throughout the game. This document explains how enemies are implemented and how the wave system manages enemy spawning.
+The enemy system controls the behavior of adversaries in the tower defense game, following the design outlined in [docs/campaign/level-1.md](mdc:docs/campaign/level-1.md).
 
 ## Enemy Types
 
-The game features four main enemy types, each with unique characteristics:
+The game features three main enemy types, implemented in [src/game/objects/Enemy.ts](mdc:src/game/objects/Enemy.ts):
 
-```typescript
-export enum EnemyType {
-  MINION = 'minion',  // Basic enemy, balanced stats
-  BRUTE = 'brute',    // Slow but high health and damage
-  RUNNER = 'runner',  // Fast but low health
-  BOSS = 'boss',      // Very high health, damage, and rewards
-}
-```
+1. **Goblins** (`GOBLIN`):
+   - Basic enemies with balanced stats
+   - Speed: 2 units/second (~100 in Phaser units)
+   - HP: 50
+   - Damage to base: 10
+   - Reward: 5 resources
 
-Each enemy type has specific stats defined in [src/game/objects/Enemy.ts](mdc:src/game/objects/Enemy.ts):
+2. **Carriers** (`CARRIER`):
+   - Medium enemies that move slightly slower but have more health
+   - Speed: 1.6 units/second (~80 in Phaser units)
+   - HP: 100
+   - Damage to base: 15
+   - Reward: 15 resources
 
-| Type   | Health | Speed | Damage | Reward |
-|--------|--------|-------|--------|--------|
-| Minion | 100    | 50    | 5      | 10     |
-| Brute  | 300    | 30    | 15     | 25     |
-| Runner | 50     | 100   | 3      | 15     |
-| Boss   | 1000   | 20    | 50     | 100    |
+3. **Ogre** (`OGRE`):
+   - Mini-boss enemy that targets defensive structures
+   - Speed: 1 unit/second (~50 in Phaser units) 
+   - HP: 300
+   - Damage to base: 30
+   - Reward: 30 resources
+   - Special behavior: Focuses on destroying structures
 
-## Enemy Behavior
+## Movement and Pathfinding
 
-Enemies follow these core behaviors:
-1. Move along a predefined path
-2. Display a health bar that changes color with health percentage
-3. Take damage from character attacks
-4. Play death animation when defeated
-5. Grant rewards when defeated
+Enemies follow paths to reach the base:
 
-## Wave System
+1. They always take the shortest available path to the base
+2. When blocked by walls, they will:
+   - Try to find an alternative path
+   - Attack the wall if no alternative exists
 
-The [WaveSystem](mdc:src/game/systems/WaveSystem.ts) controls enemy spawning through:
+## Path Following Implementation
 
-1. **Wave Generation**: Creates increasingly difficult waves
-2. **Enemy Spawning**: Spawns enemies with controlled timing
-3. **Wave Progression**: Manages transitions between waves
+The path following system:
+1. Uses Phaser's curves and paths
+2. Calculates path length and duration based on enemy speed
+3. Creates tweens to move enemies along the path
+4. Handles direction changes to flip sprites correctly
+5. Supports custom path handling for different map layouts
 
-### Wave Structure
+## Health and Damage System
 
-- Default: 10 waves per level
-- Waves increase in difficulty with level progression
-- Each wave contains a mix of enemy types with specific spawn delays
-- The final wave of each level contains a boss enemy
+Enemies have health bars and take damage from:
+1. Tower attacks
+2. Trap effects
 
-### Implementation
+When an enemy's health reaches zero:
+1. The enemy dies and drops resources
+2. A death animation plays
+3. Rewards are emitted via events for collection
 
-```typescript
-// Wave generation example from WaveSystem
-private generateWaves(level: number): WaveData[] {
-  // Creates progressively harder waves
-  // Mixes enemy types based on wave number
-  // Final wave includes a boss
-}
-```
+## Slowing and Status Effects
 
-## System Integration
+Enemies can be affected by traps and special abilities:
+1. Movement speed can be reduced by a factor
+2. Visual indicators show when an enemy is affected
+3. Effects expire after a set duration
 
-The enemy system integrates with other game systems:
-- **Path System**: Provides paths for enemies to follow
-- **Economy System**: Processes rewards when enemies are defeated
-- **Character System**: Handles damage calculation and projectile collision
+## Wave Integration
 
-## Extending Enemy System
+The enemy system integrates with the wave system to:
+1. Spawn enemies at designated points
+2. Track active enemies during waves
+3. Detect when all enemies are defeated to advance waves
 
-To add new enemy types or behaviors:
-1. Add new types to the EnemyType enum
-2. Define stats in the getEnemyStats method
-3. Create appropriate sprite assets
-4. Update the WaveSystem to incorporate new enemy types
+## Enemy Behavior in Level 1
+
+Following the level design in [docs/campaign/level-1.md](mdc:docs/campaign/level-1.md):
+
+1. **First Wave**: 4 goblins from the left entrance
+2. **Second Wave**: 5 goblins from left, 3 from right (simultaneous)
+3. **Final Wave**: 
+   - 3 goblins from left
+   - 2 carriers from right
+   - 1 ogre from the least defended entrance
+
+The ogre specifically targets defensive structures and requires multiple towers or constant repairs to defeat.

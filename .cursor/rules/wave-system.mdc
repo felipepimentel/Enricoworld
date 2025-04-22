@@ -1,0 +1,92 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Wave System
+
+The wave system controls the progression of enemy spawns throughout gameplay, as implemented in [src/game/systems/WaveSystem.ts](mdc:src/game/systems/WaveSystem.ts).
+
+## Wave Structure
+
+Each level consists of multiple waves of enemies, with Level 1 featuring three main waves as described in [docs/campaign/level-1.md](mdc:docs/campaign/level-1.md):
+
+1. **Tutorial Wave** (60-120 seconds):
+   - 4 goblins from the left entrance
+   - Introduces basic enemy movement and tower defense
+
+2. **Dual-Attack Wave** (150-240 seconds):
+   - 5 goblins from the left entrance
+   - 3 goblins from the right entrance
+   - Challenges player to defend multiple paths simultaneously
+
+3. **Final Wave with Mini-Boss** (270-360 seconds):
+   - 3 goblins from the left entrance
+   - 2 carriers from the right entrance
+   - 1 ogre mini-boss from the least defended entrance
+   - Tests player's complete defensive strategy
+
+## Wave Configuration
+
+Each wave is configured with:
+```typescript
+interface WaveConfig {
+    enemies: {
+        type: EnemyType;
+        count: number;
+        delay: number; // Delay between spawns in ms
+    }[];
+    breakTime: number; // Time before next wave in ms
+}
+```
+
+## Wave Progression
+
+The wave system manages:
+
+1. **Wave Timing**:
+   - Initial preparation period (~60 seconds)
+   - Break times between waves (30-60 seconds)
+   - Wave durations based on enemy count and type
+
+2. **Spawn Mechanics**:
+   - Enemies appear from designated spawn points
+   - Spawn points correspond to predefined paths
+   - Enemy selection is based on wave configuration
+   - Random spawn point selection when multiple options exist
+
+3. **Wave Completion**:
+   - Tracks all active enemies in a wave
+   - Detects when all enemies in a wave are defeated
+   - Progresses to the next wave after the break time
+   - Emits events for wave start, progress, and completion
+
+## Between-Wave Activities
+
+During breaks between waves:
+1. Players collect resources from defeated enemies
+2. Additional resource crystals/piles appear randomly
+3. Players have time to reinforce defenses and repair structures
+4. Messages/UI indicate the upcoming wave countdown
+
+## Resource Economy Integration
+
+The wave system integrates with the economy:
+1. Enemies defeated in earlier waves provide resources for later waves
+2. Progressive resource scaling ensures players have adequate materials for later challenges
+3. Special rewards at wave completion supplement the economy
+
+## Event Communication
+
+The WaveSystem emits various events:
+- `waveStarted`: When a new wave begins
+- `waveCompleted`: When all enemies in a wave are defeated
+- `allWavesCompleted`: When the final wave is cleared
+
+## System Control Methods
+
+Key methods for controlling the wave system:
+1. `startNextWave()`: Begins the next wave in sequence
+2. `checkWaveCompletion()`: Verifies if all enemies in a wave are defeated
+3. `update()`: Regular updates to track enemy status
+4. `isWaveInProgress()`: Checks if a wave is currently active

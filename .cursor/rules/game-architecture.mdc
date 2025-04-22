@@ -56,3 +56,54 @@ alwaysApply: true
 3. Test on different browsers and hardware
 4. Monitor performance in development
 5. Clean up resources properly
+
+# Game Architecture
+
+This tower defense game uses Phaser 3 for the game engine with a React wrapper component.
+
+## Core Components
+
+- **Game Component** ([src/components/GameComponent.tsx](mdc:src/components/GameComponent.tsx)): React component that initializes and contains the Phaser game instance
+- **Game Class** ([src/game/Game.ts](mdc:src/game/Game.ts)): Main Phaser game configuration and setup
+- **Game Scene** ([src/game/scenes/GameScene.ts](mdc:src/game/scenes/GameScene.ts)): Primary scene containing gameplay logic
+
+## Scene Structure
+
+The game uses multiple scenes:
+- **PreloadScene**: Loads assets before gameplay begins
+- **GameScene**: Main gameplay scene with map, enemies, and builder
+- Additional UI scenes may overlay the game scene
+
+## Key Systems
+
+1. **Builder System**: Player-controlled character that builds and repairs structures
+2. **Structure System**: Walls, towers, and traps placed to defend the base
+3. **Enemy System**: Different types of enemies that follow paths to the base
+4. **Wave System**: Controls the spawning and progression of enemy waves
+5. **Path System**: Manages enemy movement paths and pathfinding
+6. **Economy System**: Controls resources gained from defeating enemies
+
+## Player Interaction
+
+The player controls the Builder character to:
+1. Move around the map with arrow keys
+2. Select structure types with number keys (1-3)
+3. Place structures by clicking
+4. Repair damaged structures
+5. Collect resources
+
+## Game Flow
+
+1. Level begins with a brief tutorial phase
+2. Waves of enemies attack in succession
+3. Player builds defenses to protect the base
+4. Special enemies and mini-bosses appear in later waves
+5. Level is complete when all waves are defeated
+
+## Technical Implementation
+
+- Uses Phaser's Arcade Physics for collisions
+- Implements custom path following for enemies
+- Uses event system for communication between components
+- Handles errors and resource loading gracefully
+- Provides fallbacks for missing assets

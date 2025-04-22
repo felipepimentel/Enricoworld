@@ -368,7 +368,7 @@ export default class GameScene extends Phaser.Scene {
         if (this.map.getLayer) { // Check if it's a real tilemap
             const obstaclesLayer = this.map.getLayer('obstacles')?.tilemapLayer;
             if (obstaclesLayer) {
-            this.physics.add.collider(this.builder, obstaclesLayer);
+                this.physics.add.collider(this.builder, obstaclesLayer);
             }
         } else if (this.obstaclesGroup) {
             // Use the obstacles group for collisions in development mode
@@ -501,7 +501,7 @@ export default class GameScene extends Phaser.Scene {
     private createMap(): void {
         try {
             // Try to load the map from the provided tilemap
-        this.map = this.make.tilemap({ key: 'level1' });
+            this.map = this.make.tilemap({ key: 'level1' });
 
             // Try to add tileset
             try {
@@ -596,9 +596,10 @@ export default class GameScene extends Phaser.Scene {
 
             this.structures.getChildren().forEach((structure: any) => {
                 if (structure.update) {
-                    if (structure.getType() === StructureType.TRAP ||
-                        structure.getType() === StructureType.TOWER) {
+                    if (structure.getType() === StructureType.TRAP) {
                         structure.update(time, delta, enemies);
+                    } else if (structure.getType() === StructureType.TOWER) {
+                        structure.update(time, enemies);
                     } else {
                         structure.update(time, delta);
                     }
@@ -695,24 +696,77 @@ export default class GameScene extends Phaser.Scene {
     }
 
     private createDefaultSpawnsAndPaths(): void {
-        // Create default spawn points
+        console.log("No spawn points found, creating default spawn points");
+
+        // Get screen dimensions
+        const width = this.game.scale.width;
+        const height = this.game.scale.height;
+
+        // Base position (center-top)
+        const baseX = width / 2;
+        const baseY = height * 0.15; // 15% from top
+
+        // Create spawn points (left and right sides)
         this.spawnPoints = [
-            new Phaser.Math.Vector2(0, 200),
-            new Phaser.Math.Vector2(0, 400)
+            new Phaser.Math.Vector2(0, height * 0.4),  // Left entrance
+            new Phaser.Math.Vector2(width, height * 0.4)  // Right entrance
         ];
 
-        // Create default paths
-        const path1 = new Phaser.Curves.Path(0, 200);
-        path1.lineTo(400, 200);
-        path1.lineTo(400, 300);
-        path1.lineTo(800, 300);
+        // Construct paths in H-shape
+        // Left path: from left side to the base
+        const leftPath = new Phaser.Curves.Path(0, height * 0.4);  // Left entrance
+        leftPath.lineTo(width * 0.25, height * 0.4);               // Horizontal to left vertical
+        leftPath.lineTo(width * 0.25, height * 0.6);               // Down to central horizontal
+        leftPath.lineTo(width * 0.5, height * 0.6);                // Horizontal to center
+        leftPath.lineTo(width * 0.5, height * 0.15);               // Up to base
 
-        const path2 = new Phaser.Curves.Path(0, 400);
-        path2.lineTo(400, 400);
-        path2.lineTo(400, 300);
-        path2.lineTo(800, 300);
+        // Right path: from right side to the base
+        const rightPath = new Phaser.Curves.Path(width, height * 0.4);  // Right entrance
+        rightPath.lineTo(width * 0.75, height * 0.4);                   // Horizontal to right vertical
+        rightPath.lineTo(width * 0.75, height * 0.6);                   // Down to central horizontal
+        rightPath.lineTo(width * 0.5, height * 0.6);                    // Horizontal to center
+        rightPath.lineTo(width * 0.5, height * 0.15);                   // Up to base
 
-        this.paths = [path1, path2];
+        this.paths = [leftPath, rightPath];
+
+        // Create a visual representation of the base
+        const baseGraphics = this.add.graphics();
+        baseGraphics.fillStyle(0xff0000, 0.5);
+        baseGraphics.fillCircle(baseX, baseY, 30);
+        baseGraphics.lineStyle(2, 0xff0000, 1);
+        baseGraphics.strokeCircle(baseX, baseY, 30);
+
+        // Set builder initial position (center-bottom)
+        const builderX = width * 0.5;
+        const builderY = height * 0.8;
+        if (this.builder) {
+            this.builder.setPosition(builderX, builderY);
+        }
+
+        // Optional: create initial towers near the bottom as specified in level-1.md
+        // Only create if we haven't already placed towers
+        const existingTowers = this.structures ? this.structures.getChildren().filter(
+            (s: any) => s.getType && s.getType() === StructureType.TOWER
+        ) : [];
+
+        if (existingTowers.length === 0 && this.structures) {
+            // Create 4 initial towers at the bottom
+            const towerPositions = [
+                { x: width * 0.4, y: height * 0.75 },
+                { x: width * 0.45, y: height * 0.75 },
+                { x: width * 0.55, y: height * 0.75 },
+                { x: width * 0.6, y: height * 0.75 }
+            ];
+
+            towerPositions.forEach(pos => {
+                const tower = new Tower(this, pos.x, pos.y);
+                this.structures.add(tower);
+                tower.setActive(true);
+                tower.setVisible(true);
+            });
+
+            console.log("Created 4 initial towers at the bottom entrance");
+        }
     }
 
     private tryBuildStructure(x: number, y: number): void {
@@ -853,9 +907,9 @@ export default class GameScene extends Phaser.Scene {
             onComplete: () => {
                 // Wait for duration then fade out
                 this.time.delayedCall(duration, () => {
-        this.tweens.add({
-            targets: this.tutorialText,
-            alpha: 0,
+                    this.tweens.add({
+                        targets: this.tutorialText,
+                        alpha: 0,
                         duration: 300
                     });
                 });

@@ -6,6 +6,7 @@ interface WaveConfig {
         type: EnemyType;
         count: number;
         delay: number; // Delay between spawns in ms
+        spawnSide: string;
     }[];
     breakTime: number; // Time before next wave in ms
 }
@@ -43,42 +44,35 @@ export class WaveSystem {
     }
 
     private createWaves(): WaveConfig[] {
-        // Tutorial wave
-        const tutorialWave: WaveConfig = {
+        // Tutorial wave - First Wave (60-120 seconds): 4 goblins from left entrance
+        const firstWave: WaveConfig = {
             enemies: [
-                { type: EnemyType.GOBLIN, count: 3, delay: 2000 }
+                { type: EnemyType.GOBLIN, count: 4, delay: 2000, spawnSide: 'left' }
             ],
-            breakTime: 10000
+            breakTime: 30000 // 30 seconds for Strategic Interval (120-150 seconds)
         };
 
-        // First real wave
-        const wave1: WaveConfig = {
+        // Second Wave (150-240 seconds): 5 goblins from left, 3 from right (simultaneous)
+        const secondWave: WaveConfig = {
             enemies: [
-                { type: EnemyType.GOBLIN, count: 5, delay: 1500 }
+                { type: EnemyType.GOBLIN, count: 5, delay: 1500, spawnSide: 'left' },
+                { type: EnemyType.GOBLIN, count: 3, delay: 1500, spawnSide: 'right' }
             ],
-            breakTime: 15000
+            breakTime: 30000 // 30 seconds for Adaptation Phase (240-270 seconds)
         };
 
-        // Second wave with carrier
-        const wave2: WaveConfig = {
+        // Final Wave (270-360 seconds)
+        const finalWave: WaveConfig = {
             enemies: [
-                { type: EnemyType.GOBLIN, count: 5, delay: 1500 },
-                { type: EnemyType.CARRIER, count: 1, delay: 3000 }
-            ],
-            breakTime: 20000
-        };
-
-        // Final wave with ogre
-        const wave3: WaveConfig = {
-            enemies: [
-                { type: EnemyType.GOBLIN, count: 8, delay: 1000 },
-                { type: EnemyType.CARRIER, count: 2, delay: 2000 },
-                { type: EnemyType.OGRE, count: 1, delay: 0 }
+                { type: EnemyType.GOBLIN, count: 3, delay: 2000, spawnSide: 'left' },
+                { type: EnemyType.CARRIER, count: 2, delay: 3000, spawnSide: 'right' },
+                // Ogre will be spawned from the least defended entrance
+                { type: EnemyType.OGRE, count: 1, delay: 5000, spawnSide: 'weakest' }
             ],
             breakTime: 0 // No break after final wave
         };
 
-        return [tutorialWave, wave1, wave2, wave3];
+        return [firstWave, secondWave, finalWave];
     }
 
     public startNextWave(): void {
@@ -104,8 +98,27 @@ export class WaveSystem {
 
         for (const enemyGroup of wave.enemies) {
             for (let i = 0; i < enemyGroup.count; i++) {
-                // Choose random spawn point and corresponding path
-                const spawnIndex = Math.floor(Math.random() * this.spawnPoints.length);
+                // Choose spawn point based on side or find the weakest side
+                let spawnIndex = 0;
+
+                if (enemyGroup.spawnSide === 'left') {
+                    // Left side spawn (first spawn point)
+                    spawnIndex = 0;
+                } else if (enemyGroup.spawnSide === 'right') {
+                    // Right side spawn (second spawn point)
+                    spawnIndex = Math.min(1, this.spawnPoints.length - 1); // Ensure we have at least 2 spawn points
+                } else if (enemyGroup.spawnSide === 'weakest') {
+                    // For the ogre, find the least defended entrance
+                    spawnIndex = this.findLeastDefendedEntrance();
+                    console.log(`Spawning ogre at the least defended entrance: ${spawnIndex === 0 ? 'left' : 'right'}`);
+                } else {
+                    // Random spawn point as fallback
+                    spawnIndex = Math.floor(Math.random() * this.spawnPoints.length);
+                }
+
+                // Ensure spawnIndex is within range
+                spawnIndex = Math.min(spawnIndex, this.spawnPoints.length - 1);
+
                 const spawnPoint = this.spawnPoints[spawnIndex];
                 const path = this.paths[spawnIndex];
 
@@ -145,6 +158,52 @@ export class WaveSystem {
                 this.checkWaveCompletion();
             });
         }
+    }
+
+    /**
+     * Find the least defended entrance by checking for nearby structures
+     * @returns The index of the spawn point with fewest defenses nearby
+     */
+    private findLeastDefendedEntrance(): number {
+        // Get all structure GameObjects
+        const structures = this.scene.children.getChildren()
+            .filter(obj => obj instanceof Phaser.GameObjects.Container &&
+                (obj as any).getType &&
+                typeof (obj as any).getType === 'function');
+
+        // Count structures near each spawn point
+        const defenseCount: number[] = [];
+
+        for (const spawnPoint of this.spawnPoints) {
+            let count = 0;
+
+            for (const structure of structures) {
+                const distance = Phaser.Math.Distance.Between(
+                    spawnPoint.x, spawnPoint.y,
+                    structure.x, structure.y
+                );
+
+                // Count structures within 200 units of the spawn
+                if (distance < 200) {
+                    count++;
+                }
+            }
+
+            defenseCount.push(count);
+        }
+
+        // Find the spawn point with the lowest defense count
+        let weakestIndex = 0;
+        let lowestCount = Number.MAX_SAFE_INTEGER;
+
+        for (let i = 0; i < defenseCount.length; i++) {
+            if (defenseCount[i] < lowestCount) {
+                lowestCount = defenseCount[i];
+                weakestIndex = i;
+            }
+        }
+
+        return weakestIndex;
     }
 
     private checkWaveCompletion(): void {
